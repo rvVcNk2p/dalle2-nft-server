@@ -6,7 +6,7 @@ const useDalleGenerateImages = async (dalle, prompt, isTest = false) => {
       let generations;
 
       if (isTest) {
-        const simulationTimeInSeconds = (Math.random() * 3 + 1) * 1000
+        const simulationTimeInSeconds = (Math.random() * 2 + 1) * 1000
         await simulateFetch(simulationTimeInSeconds)
         generations = dummyGenerations() 
       } else generations = await dalle.generate(prompt);

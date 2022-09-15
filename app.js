@@ -7,12 +7,15 @@ const app = express()
 
 const { 
   PORT,
-  ENVIRONMENT
+  ENVIRONMENT,
+  DEV_WHITELIST_URL
 } = process.env
 
 const port = PORT || 3000
 
 const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app']
+ENVIRONMENT === 'DEVELOPMENT' ? whitelist.push(DEV_WHITELIST_URL) : null
+
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -23,7 +26,7 @@ const corsOptions = {
   }
 }
 
-ENVIRONMENT !== 'DEVELOPMENT' ? app.use(cors(corsOptions)) : null
+app.use(cors(corsOptions))
 
 import initRouter from './routes.js'
 initRouter(app)
