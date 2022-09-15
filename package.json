@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "nodemon app.js",
     "prod": "npm i && node app.js"
@@ -11,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "dalle-node": "^1.0.7",
     "dotenv": "^16.0.2",
     "express": "^4.18.1"
   }
