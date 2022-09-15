@@ -14,7 +14,7 @@ const {
 
 const port = PORT || 3000
 
-const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app', 'https://brilliant-sfogliatella-a87a4e.netlify.app/']
+const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app']
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -25,7 +25,7 @@ const corsOptions = {
   }
 }
 
-process.env.ENVIRONMENT !== 'DEVELOPMENT' ? app.use(cors(corsOptions)) : null
+ENVIRONMENT !== 'DEVELOPMENT' ? app.use(cors(corsOptions)) : null
 
 app.get('/fetch-images', async (req, res, next) => {
   try {
