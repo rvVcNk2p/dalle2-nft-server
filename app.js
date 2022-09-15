@@ -19,6 +19,10 @@ app.get('/fetch-images', async (req, res) => {
   }
 })
 
+app.get('/health', async (req, res) => {
+  res.status(200).json({ status: "Everything is fina. Up and running." })
+})
+
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
 })

@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon app.js",
-    "prod": "npm i && node app.js"
+    "init": "npm install",
+    "prod": "node app.js"
   },
   "keywords": [],
   "author": "",
