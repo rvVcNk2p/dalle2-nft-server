@@ -14,7 +14,7 @@ const {
 
 const port = PORT || 3000
 
-const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app']
+const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app', 'https://brilliant-sfogliatella-a87a4e.netlify.app/']
 const corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
