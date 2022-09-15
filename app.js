@@ -1,5 +1,5 @@
 import express from 'express';
-import rateLimit from 'express-rate-limit'
+import cors from 'cors';
 import { Dalle } from 'dalle-node';
 import * as dotenv from 'dotenv'
 const app = express()
@@ -8,28 +8,30 @@ dotenv.config()
 
 const { 
   PORT,
-  RATE_LIMIT, 
-  RATE_LIMIT_STANDARD_HEADER, 
-  RATE_LIMIT_LEGACY_HEADER,
-  BEARER_TOKEN
+  BEARER_TOKEN,
+  ENVIRONMENT
 } = process.env
 
 const port = PORT || 3000
 
-const limiter = rateLimit({
-	windowMs: 60 * 1000, // 1 minutes
-	max: RATE_LIMIT || 6, // Limit each IP to 6 requests per `window` (here, per 1 minutes)
-	standardHeaders: RATE_LIMIT_STANDARD_HEADER || false, // Return rate limit info in the `RateLimit-*` headers
-	legacyHeaders: RATE_LIMIT_LEGACY_HEADER || false, // Disable the `X-RateLimit-*` headers
-})
+const whitelist = ['https://brilliant-sfogliatella-a87a4e.netlify.app', 'https://brilliant-sfogliatella-a87a4e.netlify.app/']
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
 
-app.use(limiter)
+process.env.ENVIRONMENT !== 'DEVELOPMENT' ? app.use(cors(corsOptions)) : null
 
-
-app.get('/fetch-images', async (req, res) => {
+app.get('/fetch-images', async (req, res, next) => {
   try {
     const dalle = new Dalle(BEARER_TOKEN);
     const creditsSummary = await dalle.getCredits();
+
     const totalCreditsLeft = creditsSummary.aggregate_credits;
     
     res.json({ message: 'Hello World!', totalCreditsLeft})
