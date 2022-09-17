@@ -68,11 +68,18 @@ const initRouter = (app) => {
 					'https://cdn.openai.com/labs/images/A%20comic%20book%20cover%20of%20a%20superhero%20wearing%20headphones.webp',
 				),
 			)
-			console.log('CID: ', cid)
 			res.json({ cid: cid.toString() })
 		} catch (error) {
 			res.json(error)
 		}
+	})
+
+	app.get('/health-check', async (_, res) => {
+		res
+			.json({
+				statusMessage: 'Everything is upp and running.',
+			})
+			.status(200)
 	})
 }
 
