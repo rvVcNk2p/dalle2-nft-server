@@ -1,9 +1,14 @@
 import { Dalle } from "dalle-node"
 import * as dotenv from 'dotenv'
+import * as ipfsClient from 'ipfs-http-client'
 dotenv.config()
 
 const { 
-  BEARER_TOKEN
+  BEARER_TOKEN,
+  INFURE_IPFS_HOST,
+  INFURE_IPFS_PORT,
+  INFURA_PROJECT_ID,
+  INFURA_SECRET,
 } = process.env
 
 
@@ -30,6 +35,23 @@ const initRouter = (app) => {
 
     if (imageFetchError) res.json({ errorMessage: 'Something went wrong during the [new image fetch]!'})
     if (creditFetchError) res.json({ errorMessage: 'Something went wrong during the [remaining credits fetch]!'})
+  })
+
+  app.get('/test-ipfs', async (_, res) => {
+    const ipfs = ipfsClient.create({ 
+      host: INFURE_IPFS_HOST || 'ipfs.infura.io',
+      port: INFURE_IPFS_PORT || 5001,
+      protocol: 'https',
+      headers: {
+          authorization: 'Basic ' + Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_SECRET).toString('base64'),
+      },
+    })
+
+    // Upload a json to infura ipfs
+    //const { cid } = await ipfs.add("{name: 'Leo'}")
+    const { cid } = await ipfs.add(ipfsClient.urlSource('https://cdn.openai.com/labs/images/A%20comic%20book%20cover%20of%20a%20superhero%20wearing%20headphones.webp'))
+
+    res.json({ cid: cid.toString() })
   })
 }
 
