@@ -1,6 +1,7 @@
 import { Dalle } from "dalle-node"
 import * as dotenv from 'dotenv'
 import * as ipfsClient from 'ipfs-http-client'
+
 dotenv.config()
 
 const { 
@@ -49,9 +50,13 @@ const initRouter = (app) => {
 
     // Upload a json to infura ipfs
     //const { cid } = await ipfs.add("{name: 'Leo'}")
-    const { cid } = await ipfs.add(ipfsClient.urlSource('https://cdn.openai.com/labs/images/A%20comic%20book%20cover%20of%20a%20superhero%20wearing%20headphones.webp'))
+    try {
+      const { cid } = await ipfs.add(ipfsClient.urlSource('https://cdn.openai.com/labs/images/A%20comic%20book%20cover%20of%20a%20superhero%20wearing%20headphones.webp'))
+      res.json({ cid: cid.toString() })
+    } catch (error) {
+      res.json(error)
+    }
 
-    res.json({ cid: cid.toString() })
   })
 }
 
