@@ -1,6 +1,9 @@
 import { Dalle } from "dalle-node"
 import * as dotenv from 'dotenv'
 import * as ipfsClient from 'ipfs-http-client'
+import { AbortController } from "node-abort-controller";
+
+global.AbortController = AbortController;
 
 dotenv.config()
 
