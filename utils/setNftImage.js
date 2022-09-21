@@ -25,7 +25,12 @@ const PRC_PROVIDER_URL = `https://polygon-${
 	ENVIRONMENT === 'DEVELOPMENT' ? 'mumbai' : 'mainnet'
 }.g.alchemy.com/v2/${ALCHEMY_API_KEY}`
 
-export const setNftImage = async (tokenId, cid) => {
+export const setNftImage = async (
+	tokenId,
+	cid,
+	maxFeePerGas,
+	maxPriorityFeePerGas,
+) => {
 	try {
 		const network = ENVIRONMENT === 'DEVELOPMENT' ? 'maticmum' : 'matic'
 		const alchemyProvider = new ethers.providers.AlchemyProvider(
@@ -40,7 +45,10 @@ export const setNftImage = async (tokenId, cid) => {
 			signer,
 		)
 
-		const tx = await constractFactory.setMintedNftImage(tokenId, cid)
+		const tx = await constractFactory.setMintedNftImage(tokenId, cid, {
+			maxFeePerGas,
+			maxPriorityFeePerGas,
+		})
 		await tx.wait()
 
 		return {

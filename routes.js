@@ -44,7 +44,15 @@ const initRouter = (app) => {
 	})
 
 	app.post('/set-nft', async (req, res) => {
-		const { tokenId, imgId, imagePath, taskId, address } = req.body
+		const {
+			tokenId,
+			imgId,
+			imagePath,
+			taskId,
+			address,
+			maxFeePerGas,
+			maxPriorityFeePerGas,
+		} = req.body
 		const { isOwner, error: ownershipErr } = await checkNftOwnership(
 			address,
 			tokenId,
@@ -86,7 +94,12 @@ const initRouter = (app) => {
 		if (cid) {
 			console.log(`✅ Image uploaded to IPFS successfully, with CID: ${cid}!`)
 		}
-		const { txResponse, error: txError } = await setNftImage(tokenId, cid)
+		const { txResponse, error: txError } = await setNftImage(
+			tokenId,
+			cid,
+			maxFeePerGas,
+			maxPriorityFeePerGas,
+		)
 		if (txResponse === 'ERROR') {
 			res.json({
 				field: 'txResponse',
