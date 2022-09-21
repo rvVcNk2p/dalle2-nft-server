@@ -45,11 +45,15 @@ export const setNftImage = async (
 			signer,
 		)
 
+		console.log('maxFeePerGas: ', maxFeePerGas)
+		console.log('maxPriorityFeePerGas: ', maxPriorityFeePerGas)
+
 		const tx = await constractFactory.setMintedNftImage(tokenId, cid, {
 			maxFeePerGas,
 			maxPriorityFeePerGas,
 			gasLimit: ethers.utils.parseUnits('5000000', 'wei'),
 		})
+
 		await tx.wait()
 
 		return {
