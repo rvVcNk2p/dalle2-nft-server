@@ -1,21 +1,18 @@
 import { Dalle } from 'dalle-node'
 import * as dotenv from 'dotenv'
-import * as ipfsClient from 'ipfs-http-client'
 import { AbortController } from 'node-abort-controller'
 
 global.AbortController = AbortController
 dotenv.config()
 
-const {
-	BEARER_TOKEN,
-	INFURE_IPFS_HOST,
-	INFURE_IPFS_PORT,
-	INFURA_PROJECT_ID,
-	INFURA_SECRET,
-} = process.env
+const { BEARER_TOKEN, FALLBACK_BEARER_TOKEN } = process.env
 
 import useDalleGetCredits from './composable/useDalleGetCredits.js'
 import useDalleGenerateImages from './composable/useDalleGenerateImages.js'
+import { uploadImgToIpfs } from './utils/ipfsUpload.js'
+import { checkNftOwnership } from './utils/checkNftOwnership.js'
+import { checkNftStatus } from './utils/checkNftStatus.js'
+import { setNftImage } from './utils/setNftImage.js'
 
 const initRouter = (app) => {
 	app.get('/fetch-images', async (req, res) => {
@@ -46,31 +43,63 @@ const initRouter = (app) => {
 			})
 	})
 
-	app.get('/test-ipfs', async (_, res) => {
-		// Upload a json to infura ipfs
-		//const { cid } = await ipfs.add("{name: 'Leo'}")
-		const ipfs = ipfsClient.create({
-			host: INFURE_IPFS_HOST || 'ipfs.infura.io',
-			port: INFURE_IPFS_PORT || 5001,
-			protocol: 'https',
-			headers: {
-				authorization:
-					'Basic ' +
-					Buffer.from(INFURA_PROJECT_ID + ':' + INFURA_SECRET).toString(
-						'base64',
-					),
-			},
-		})
+	app.post('/set-nft', async (req, res) => {
+		const { tokenId, imgId, imagePath, taskId, address } = req.body
+		const { isOwner, error: ownershipErr } = await checkNftOwnership(
+			address,
+			tokenId,
+		)
+		// If the request initiator do not owns the NFT throw an error
+		if (!isOwner || ownershipErr) {
+			res.json({
+				field: 'owner',
+				value: isOwner,
+				error: ownershipErr,
+			})
+		}
+		if (isOwner) {
+			console.log(`✅ The NFT is belongs to: ${address}!`)
+		}
 
-		try {
-			const { cid } = await ipfs.add(
-				ipfsClient.urlSource(
-					'https://cdn.openai.com/labs/images/A%20comic%20book%20cover%20of%20a%20superhero%20wearing%20headphones.webp',
-				),
-			)
-			res.json({ cid: cid.toString() })
-		} catch (error) {
-			res.json(error)
+		const { isAlreadyUpdated, error: statusErr } = await checkNftStatus(tokenId)
+		// If the requested NFT has already been setted
+		if (isAlreadyUpdated || statusErr) {
+			res.json({
+				field: 'status',
+				value: isAlreadyUpdated,
+				error: ownershipErr,
+			})
+		}
+		if (!isAlreadyUpdated) {
+			console.log(`✅ The NFT has not updated yet!`)
+		}
+
+		const { cid, error: ipfsErr } = await uploadImgToIpfs(imagePath)
+		// If the uploadable image ipfs upload has been failed
+		if (cid === null || ipfsErr) {
+			res.json({
+				field: 'ipfs',
+				value: cid,
+				error: ownershipErr,
+			})
+		}
+		if (cid) {
+			console.log(`✅ Image uploaded to IPFS successfully, with CID: ${cid}!`)
+		}
+		const { txResponse, error: txError } = await setNftImage(tokenId, cid)
+		if (txResponse === 'ERROR') {
+			res.json({
+				field: 'txResponse',
+				value: 'ERROR',
+				error: txError,
+			})
+		} else {
+			console.log(`✅ The requested image has been setted!`)
+			res.json({
+				field: 'txResponse',
+				value: 'SUCCESS',
+				error: txError,
+			})
 		}
 	})
 
