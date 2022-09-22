@@ -2,7 +2,7 @@ import ethers from 'ethers'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-import { CurratedLabsOriginalsABI } from '../abi/CurratedLabsOriginalsABI.js'
+import { CurratedLabsOriginalsABI } from '../../abi/CurratedLabsOriginalsABI.js'
 
 const {
 	ENVIRONMENT,

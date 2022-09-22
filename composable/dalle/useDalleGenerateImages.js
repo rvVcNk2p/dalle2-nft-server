@@ -1,5 +1,5 @@
-import { dummyGenerations } from '../dummyData/testGenerations.js'
-import { simulateFetch } from '../utils/simulateFetch.js'
+import { dummyGenerations } from '../../dummyData/testGenerations.js'
+import { simulateFetch } from '../../utils/simulateFetch.js'
 
 const useDalleGenerateImages = async (dalle, prompt, isTest = false) => {
 	try {

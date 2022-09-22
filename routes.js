@@ -7,12 +7,14 @@ dotenv.config()
 
 const { BEARER_TOKEN, FALLBACK_BEARER_TOKEN } = process.env
 
-import useDalleGetCredits from './composable/useDalleGetCredits.js'
-import useDalleGenerateImages from './composable/useDalleGenerateImages.js'
-import { uploadImgToIpfs } from './utils/ipfsUpload.js'
-import { checkNftOwnership } from './utils/checkNftOwnership.js'
-import { checkNftStatus } from './utils/checkNftStatus.js'
-import { setNftImage } from './utils/setNftImage.js'
+import useDalleGetCredits from './composable/dalle/useDalleGetCredits.js'
+import useDalleGenerateImages from './composable/dalle/useDalleGenerateImages.js'
+import { useGasPrice } from './composable/useGasPrice.js'
+
+import { uploadImgToIpfs } from './composable/useIpfsUpload.js'
+import { checkNftOwnership } from './composable/nft/checkNftOwnership.js'
+import { checkNftStatus } from './composable/nft/checkNftStatus.js'
+import { setNftImage } from './composable/nft/setNftImage.js'
 
 const initRouter = (app) => {
 	app.get('/fetch-images', async (req, res) => {
@@ -44,15 +46,7 @@ const initRouter = (app) => {
 	})
 
 	app.post('/set-nft', async (req, res) => {
-		const {
-			tokenId,
-			imgId,
-			imagePath,
-			taskId,
-			address,
-			maxFeePerGas,
-			maxPriorityFeePerGas,
-		} = req.body
+		const { tokenId, imgId, imagePath, taskId, address } = req.body
 		const { isOwner, error: ownershipErr } = await checkNftOwnership(
 			address,
 			tokenId,
@@ -94,6 +88,13 @@ const initRouter = (app) => {
 		if (cid) {
 			console.log(`✅ Image uploaded to IPFS successfully, with CID: ${cid}!`)
 		}
+		// Fetch required fee prices
+		const { maxFeePerGas, maxPriorityFeePerGas, fetchGasPrice } = useGasPrice()
+		await fetchGasPrice()
+		if (maxFeePerGas && maxPriorityFeePerGas) {
+			console.log(`✅ The FeePerGas fetching has been completed.`)
+		}
+
 		const { txResponse, error: txError } = await setNftImage(
 			tokenId,
 			cid,
