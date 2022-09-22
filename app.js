@@ -1,10 +1,16 @@
 import express from 'express'
 import cors from 'cors'
 import bodyParser from 'body-parser'
+import connectDB from './db/config.js'
+import initRouter from './routes.js'
+
 import * as dotenv from 'dotenv'
 dotenv.config()
 
 const app = express()
+
+// Connect Database
+connectDB()
 
 const { PORT, ENVIRONMENT, DEV_WHITELIST_URL } = process.env
 
@@ -27,7 +33,6 @@ app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-import initRouter from './routes.js'
 initRouter(app)
 
 app.listen(port, () => {

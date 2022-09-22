@@ -1,4 +1,4 @@
-const useDalleGetCredits = async (dalle) => {
+export const useDalleGetCredits = async (dalle) => {
 	try {
 		const creditsSummary = await dalle.getCredits()
 		const totalCreditsLeft = creditsSummary.aggregate_credits
@@ -14,5 +14,3 @@ const useDalleGetCredits = async (dalle) => {
 		}
 	}
 }
-
-export default useDalleGetCredits

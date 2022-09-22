@@ -3,10 +3,11 @@ import { STATUS_CODE } from '../../utils/constants.js'
 
 import { useGasPrice } from '../../composable/useGasPrice.js'
 
-import { uploadImgToIpfs } from '../../composable/useIpfsUpload.js'
+// import { uploadImgToIpfs } from '../../composable/useIpfsUpload.js'
 import { checkNftOwnership } from '../../composable/nft/checkNftOwnership.js'
 import { checkNftStatus } from '../../composable/nft/checkNftStatus.js'
 import { setNftImage } from '../../composable/nft/setNftImage.js'
+import { updateTokenWithFinalImage } from '../../composable/mongo/updateTokenWithFinalImage.js'
 
 import * as dotenv from 'dotenv'
 dotenv.config()
@@ -14,7 +15,7 @@ dotenv.config()
 const router = express.Router()
 
 router.post('/', async (req, res, __) => {
-	const { tokenId, imgId, imagePath, taskId, address } = req.body
+	const { tokenId, cid, address } = req.body
 
 	const { isOwner, error: ownershipErr } = await checkNftOwnership(
 		address,
@@ -49,20 +50,21 @@ router.post('/', async (req, res, __) => {
 		console.log(`✅ The NFT has not updated yet!`)
 	}
 
-	const { cid, error: ipfsErr } = await uploadImgToIpfs(imagePath)
-	// If the uploadable image ipfs upload has been failed
-	if (cid === null || ipfsErr) {
-		const { code, reason } = ipfsErr
-		console.log(`❌ [${code}] IPFS error: ${reason}`)
-		res.json({
-			field: 'ipfs',
-			value: STATUS_CODE.ERROR,
-			error: ipfsErr,
-		})
-	}
-	if (cid) {
-		console.log(`✅ Image uploaded to IPFS successfully, with CID: ${cid}!`)
-	}
+	// const ipfsResult = await uploadImgToIpfs([{ path: imagePath, id: null }])
+	// const { cid, error: ipfsErr } = ipfsResult[0]
+
+	// if (cid === null || ipfsErr) {
+	// 	const { code, reason } = ipfsErr
+	// 	console.log(`❌ [${code}] IPFS error: ${reason}`)
+	// 	res.json({
+	// 		field: 'ipfs',
+	// 		value: STATUS_CODE.ERROR,
+	// 		error: ipfsErr,
+	// 	})
+	// }
+	// if (cid) {
+	// 	console.log(`✅ Image uploaded to IPFS successfully, with CID: ${cid}!`)
+	// }
 	// Fetch required fee prices
 	const { maxFeePerGas, maxPriorityFeePerGas, fetchGasPrice } = useGasPrice()
 	await fetchGasPrice()
@@ -76,6 +78,10 @@ router.post('/', async (req, res, __) => {
 		maxFeePerGas,
 		maxPriorityFeePerGas,
 	)
+
+	await updateTokenWithFinalImage(tokenId, cid)
+	// TODO: Error handling
+	// TODO: Fetch the full image and sen into Database
 
 	if (txResponse === 'SUCCESS') {
 		console.log(`✅ The requested image has been setted!`)

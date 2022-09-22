@@ -1,7 +1,7 @@
 import { dummyGenerations } from '../../dummyData/testGenerations.js'
 import { simulateFetch } from '../../utils/simulateFetch.js'
 
-const useDalleGenerateImages = async (dalle, prompt, isTest = false) => {
+export const useDalleGenerateImages = async (dalle, prompt, isTest = false) => {
 	try {
 		let generations
 
@@ -23,5 +23,3 @@ const useDalleGenerateImages = async (dalle, prompt, isTest = false) => {
 		}
 	}
 }
-
-export default useDalleGenerateImages
