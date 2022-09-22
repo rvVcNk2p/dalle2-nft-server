@@ -1,6 +1,7 @@
 import { Dalle } from 'dalle-node'
 import * as dotenv from 'dotenv'
 import { AbortController } from 'node-abort-controller'
+import { STATUS_CODE } from './utils/constants.js'
 
 global.AbortController = AbortController
 dotenv.config()
@@ -58,7 +59,7 @@ const initRouter = (app) => {
 			console.log(`❌ [${code}] Nft status error: ${reason}`)
 			res.json({
 				field: 'owner',
-				value: isOwner,
+				value: STATUS_CODE.ERROR,
 				error: ownershipErr,
 			})
 		}
@@ -73,7 +74,7 @@ const initRouter = (app) => {
 			console.log(`❌ [${code}] Nft status error: ${reason}`)
 			res.json({
 				field: 'status',
-				value: isAlreadyUpdated,
+				value: STATUS_CODE.ERROR,
 				error: statusErr,
 			})
 		}
@@ -88,7 +89,7 @@ const initRouter = (app) => {
 			console.log(`❌ [${code}] IPFS error: ${reason}`)
 			res.json({
 				field: 'ipfs',
-				value: cid,
+				value: STATUS_CODE.ERROR,
 				error: ipfsErr,
 			})
 		}
@@ -113,7 +114,7 @@ const initRouter = (app) => {
 			console.log(`✅ The requested image has been setted!`)
 			res.json({
 				field: 'txResponse',
-				value: 'SUCCESS',
+				value: STATUS_CODE.SUCCESS,
 				error: txError,
 			})
 		} else {
@@ -121,7 +122,7 @@ const initRouter = (app) => {
 			console.log(`❌ [${code}] txResponse: ${reason}`)
 			res.json({
 				field: 'txResponse',
-				value: 'ERROR',
+				value: STATUS_CODE.ERROR,
 				error: txError,
 			})
 		}
