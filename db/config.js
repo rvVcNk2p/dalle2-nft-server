@@ -2,9 +2,15 @@ import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
 dotenv.config()
 
-const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD } = process.env
+const { MONGO_DB_USERNAME, MONGO_DB_PASSWORD, ENVIRONMENT } = process.env
 
-const CONNECTION_STRING = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.grkoddk.mongodb.net/?retryWrites=true&w=majority`
+const DEVELOPMENT_CONNECTION_SRTING = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@cluster0.grkoddk.mongodb.net/?retryWrites=true&w=majority`
+const PRODUCTION_CONNECTION_SRTING = `mongodb+srv://${MONGO_DB_USERNAME}:${MONGO_DB_PASSWORD}@serverlessinstance0.5s7wp.mongodb.net/?retryWrites=true&w=majority`
+
+const CONNECTION_STRING =
+	ENVIRONMENT === 'DEVELOPMENT'
+		? DEVELOPMENT_CONNECTION_SRTING
+		: PRODUCTION_CONNECTION_SRTING
 
 const connectDB = async () => {
 	try {
