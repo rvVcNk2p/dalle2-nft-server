@@ -28,6 +28,7 @@ const PRC_PROVIDER_URL = `https://polygon-${
 export const setNftImage = async (
 	tokenId,
 	cid,
+	description,
 	maxFeePerGas,
 	maxPriorityFeePerGas,
 ) => {
@@ -45,11 +46,16 @@ export const setNftImage = async (
 			signer,
 		)
 
-		const tx = await constractFactory.setMintedNftImage(tokenId, cid, {
-			maxFeePerGas,
-			maxPriorityFeePerGas,
-			gasLimit: ethers.utils.parseUnits('15000000', 'wei'),
-		})
+		const tx = await constractFactory.setMintedNftImage(
+			tokenId,
+			cid,
+			description,
+			{
+				maxFeePerGas,
+				maxPriorityFeePerGas,
+				gasLimit: ethers.utils.parseUnits('15000000', 'wei'),
+			},
+		)
 
 		await tx.wait()
 

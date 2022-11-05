@@ -15,7 +15,7 @@ dotenv.config()
 const router = express.Router()
 
 router.post('/', async (req, res, __) => {
-	const { tokenId, cid, address } = req.body
+	const { tokenId, cid, address, description } = req.body
 
 	const { isOwner, error: ownershipErr } = await checkNftOwnership(
 		address,
@@ -75,6 +75,7 @@ router.post('/', async (req, res, __) => {
 	const { txResponse, error: txError } = await setNftImage(
 		tokenId,
 		cid,
+		description,
 		maxFeePerGas,
 		maxPriorityFeePerGas,
 	)

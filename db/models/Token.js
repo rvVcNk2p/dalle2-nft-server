@@ -9,6 +9,14 @@ const TokenSchema = new mongoose.Schema({
 		type: String,
 		default: '',
 	},
+	prompt: {
+		type: String,
+		default: '',
+	},
+	description: {
+		type: String,
+		default: '',
+	},
 	images: [
 		{
 			iteration: Number,

@@ -94,6 +94,12 @@ export const CurratedLabsOriginalsABI = [
 				name: '_cid',
 				type: 'string',
 			},
+			{
+				indexed: false,
+				internalType: 'string',
+				name: '_description',
+				type: 'string',
+			},
 		],
 		name: 'SetMindedNft',
 		type: 'event',
@@ -122,6 +128,19 @@ export const CurratedLabsOriginalsABI = [
 		],
 		name: 'Transfer',
 		type: 'event',
+	},
+	{
+		inputs: [],
+		name: 'MINT_PRICE',
+		outputs: [
+			{
+				internalType: 'uint256',
+				name: '',
+				type: 'uint256',
+			},
+		],
+		stateMutability: 'view',
+		type: 'function',
 	},
 	{
 		inputs: [
@@ -227,6 +246,11 @@ export const CurratedLabsOriginalsABI = [
 			{
 				internalType: 'string',
 				name: 'cid',
+				type: 'string',
+			},
+			{
+				internalType: 'string',
+				name: 'description',
 				type: 'string',
 			},
 		],
@@ -402,6 +426,11 @@ export const CurratedLabsOriginalsABI = [
 			{
 				internalType: 'string',
 				name: 'cid',
+				type: 'string',
+			},
+			{
+				internalType: 'string',
+				name: 'description',
 				type: 'string',
 			},
 		],

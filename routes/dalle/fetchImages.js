@@ -3,10 +3,12 @@ import express from 'express'
 import { STATUS_CODE } from '../../utils/constants.js'
 
 import { useDalleGetCredits } from '../../composable/dalle/useDalleGetCredits.js'
+import { useGeneratePrompt } from '../../composable/dalle/useGeneratePrompt.js'
 import { useDalleGenerateImages } from '../../composable/dalle/useDalleGenerateImages.js'
 
 import { getTokenFromDb } from '../../composable/mongo/getTokenFromDb.js'
 import { updateTokenImages } from '../../composable/mongo/updateTokenImages.js'
+import { updatePromptDescription } from '../../composable/mongo/updatePromptDescription.js'
 
 import { checkNftStatus } from '../../composable/nft/checkNftStatus.js'
 import { checkNftOwnership } from '../../composable/nft/checkNftOwnership.js'
@@ -100,9 +102,10 @@ router.get('/', async (req, res, __) => {
 			// == END == Get remaining credits
 
 			// == START == Generate new images by prompt
-			const prompt = 'a horse, painting by Leonid Afremov'
+			const { prompt, description } = await useGeneratePrompt()
+
 			const { generations, fetchError: imageFetchError } =
-				await useDalleGenerateImages(dalle, prompt, true)
+				await useDalleGenerateImages(dalle, prompt, true) // If true, will return the dummy images
 
 			if (imageFetchError) {
 				const reason = 'Something went wrong during art fetch.'
@@ -140,21 +143,24 @@ router.get('/', async (req, res, __) => {
 
 			// == START == Save mapped items to DB
 			const updatedResult = await updateTokenImages(tokenId, finalizedImages)
+			// TODO: Safty check
+			await updatePromptDescription(tokenId, prompt, description)
 			// == END ==
 
 			if (updatedResult.token.images.length) {
 				console.log(
 					`✅ Initial image request has been completed successfully. Here we go!`,
 				)
-				res.json({ generationImages: updatedResult.token.images })
+				res.json({ generationImages: updatedResult.token.images, description })
 			} else {
 				console.log(`❌ NO IMAGES - CHECK THIS OUT!`)
 				res.json({ generationImages: [] })
 			}
 		} else {
-			const { images } = token
+			const { images, description } = token
+
 			console.log(`✅ User already generated some images! Here we go!`)
-			res.json({ generationImages: images })
+			res.json({ generationImages: images, description })
 		}
 		// == END == Has tokenId generated images
 	} else {
