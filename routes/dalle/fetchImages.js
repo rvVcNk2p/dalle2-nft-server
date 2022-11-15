@@ -105,7 +105,7 @@ router.get('/', async (req, res, __) => {
 			const { prompt, description } = await useGeneratePrompt()
 
 			const { generations, fetchError: imageFetchError } =
-				await useDalleGenerateImages(dalle, prompt, true) // If true, will return the dummy images
+				await useDalleGenerateImages(dalle, prompt, false) // If true, will return the dummy images
 
 			if (imageFetchError) {
 				const reason = 'Something went wrong during art fetch.'
